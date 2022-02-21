@@ -19,8 +19,6 @@ It needs to run as privileged, and depending on what you want to do, having acce
 ```
 docker run -it --rm \
   --privileged \
-  -v /lib/modules:/lib/modules:ro \
-  -v /etc/localtime:/etc/localtime:ro \
   --pid=host \
   ebpf-for-mac
 ```
@@ -29,7 +27,7 @@ Note: /lib/modules probably doesn't exist on your mac host, so Docker will map t
 
 ## Maintenance
 
-Docker published their for-desktop kernel's [on Docker hub](https://hub.docker.com/r/docker/for-desktop-kernel/tags?page=1&ordering=last_updated) you may need to update the Dockerfile for the latest kernel that matches your linuxkit host VM.
+you need to change the link to the kernel sources in the header install script to match the kernel version of the docker vm on osx
 
 ## Docker compose
 
@@ -39,8 +37,6 @@ services:
   bpf:
     image: ebpf-for-mac
     volumes:
-      - /lib/modules:/lib/modules:ro
-      - /etc/localtime:/etc/localtime:ro
       - .:/wdir
     privileged: true
     pid: "host"
