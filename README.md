@@ -1,6 +1,10 @@
-# eBPF for Docker Desktop on macOS
+# Fork of eBPF for Docker Desktop on macOS, patched for use with redbpf
 
 eBPF and its compiler bcc need access to some parts of the kernel and its headers to work. This image shows how you can do that with Docker Desktop for mac's linuxkit host VM.
+
+On top of what is provided by the default container, this fork install redbpf and all the tools necessary to develop with in on a mac m1 inside docker.
+
+you may need to increase the default memory in the container vm for everything to build properly.
 
 ## Build the image
 
@@ -13,11 +17,11 @@ Done quite simply with:
 It needs to run as privileged, and depending on what you want to do, having access to the host's PID namespace is pretty useful too.
 
 ```
-docker run -it --rm \ 
-  --privileged \ 
-  -v /lib/modules:/lib/modules:ro \ 
-  -v /etc/localtime:/etc/localtime:ro \ 
-  --pid=host \ 
+docker run -it --rm \
+  --privileged \
+  -v /lib/modules:/lib/modules:ro \
+  -v /etc/localtime:/etc/localtime:ro \
+  --pid=host \
   ebpf-for-mac
 ```
 
@@ -26,3 +30,19 @@ Note: /lib/modules probably doesn't exist on your mac host, so Docker will map t
 ## Maintenance
 
 Docker published their for-desktop kernel's [on Docker hub](https://hub.docker.com/r/docker/for-desktop-kernel/tags?page=1&ordering=last_updated) you may need to update the Dockerfile for the latest kernel that matches your linuxkit host VM.
+
+## Docker compose
+
+```yaml
+#compose.yml
+services:
+  bpf:
+    image: ebpf-for-mac
+    volumes:
+      - /lib/modules:/lib/modules:ro
+      - /etc/localtime:/etc/localtime:ro
+      - .:/wdir
+    privileged: true
+    pid: "host"
+    command: tail -F hello
+```
